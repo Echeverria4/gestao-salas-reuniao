@@ -1,5 +1,5 @@
 /* ==========================================================
-   OUTLOOK ADD-IN — Reservar Sala de Reunião (Pluma)
+   OUTLOOK ADD-IN — Reservar Sala de Reunião
    ========================================================== */
 
 let supa = null;
@@ -76,7 +76,7 @@ function headerHTML() {
       </div>
       <div>
         <div class="header-title">Reservar Sala</div>
-        <div class="header-sub">Pluma Agroavícola</div>
+        <div class="header-sub">Sistema de Salas</div>
       </div>
     </div>`;
 }

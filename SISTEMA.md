@@ -1,6 +1,6 @@
-# Gestão de Salas de Reunião — Pluma Agroavícola
+# Gestão de Salas de Reunião
 
-Sistema corporativo web para **reserva e gerenciamento de salas de reunião por andar**, desenvolvido sob medida para a Pluma Agroavícola.
+Sistema corporativo web para **reserva e gerenciamento de salas de reunião por andar**.
 
 ---
 
@@ -32,7 +32,7 @@ Um aplicativo web acessado pelo navegador (sem instalação) que centraliza o co
 
 ### Administrador
 
-Acessa o modo admin com senha (`Pluma123@` por padrão, alterável no `config.js`).
+Acessa o modo admin com senha (definida no `config.js`).
 
 - **Gerenciar andares** — Adiciona, edita e remove andares (ex.: "Térreo", "1º Andar", "2º Andar")
 - **Gerenciar salas** — Para cada andar, cadastra salas com:
@@ -63,11 +63,10 @@ Acessa o modo admin com senha (`Pluma123@` por padrão, alterável no `config.js
 |---|---|
 | Front-end | React 18 (via CDN, sem build step) |
 | Linguagem | JSX transpilado no browser pelo Babel Standalone |
-| Estilização | CSS puro com design system Pluma (verde `#1f574b` + dourado `#b6862f`) |
+| Estilização | CSS puro com design system próprio |
 | Fontes | IBM Plex Sans (corpo) + Encode Sans Condensed (labels/tabelas) |
-| Banco de dados | Supabase (PostgreSQL na nuvem) — projeto compartilhado com o Arena |
+| Banco de dados | Supabase (PostgreSQL na nuvem) |
 | Hospedagem | Vercel (deploy automático a cada `git push`) |
-| Repositório | GitHub — `Echeverria4/Salas-de-Reuniao` |
 
 ### Tabelas no banco de dados
 
@@ -96,7 +95,7 @@ Se o sistema for aberto sem conexão com o Supabase (credenciais ausentes ou inv
 
 Para rodar localmente com Python:
 ```bash
-cd c:\PYTHON\Gestao_Salas_Reuniao
+cd caminho/do/projeto
 python -m http.server 8080
 # Acessar: http://localhost:8080
 ```
@@ -106,7 +105,7 @@ python -m http.server 8080
 ## Como publicar alterações
 
 ```bash
-cd c:\PYTHON\Gestao_Salas_Reuniao
+cd caminho/do/projeto
 git add .
 git commit -m "descrição da alteração"
 git push   # Vercel detecta e faz deploy automático em ~15 segundos
@@ -117,27 +116,24 @@ git push   # Vercel detecta e faz deploy automático em ~15 segundos
 ## Arquivos do projeto
 
 ```
-Gestao_Salas_Reuniao/
-├── index.html      # Ponto de entrada — carrega fontes, libs e scripts
-├── config.js       # URL Supabase, chave anon, nome da empresa, senha admin
-├── data.js         # Camada de dados: lê/grava no Supabase ou no modo demo
-├── app.jsx         # App React: todas as telas, componentes e lógica de UI
-├── styles.css      # Design system completo com variáveis de cor e tipografia
-├── schema.sql      # Script SQL para criar as tabelas no Supabase
-├── vercel.json     # Configuração de rotas para o Vercel
-└── SISTEMA.md      # Este arquivo
+gestao-salas-reuniao/
+├── index.html          # Ponto de entrada — carrega fontes, libs e scripts
+├── config.example.js   # Modelo de configuração (copiar para config.js e preencher)
+├── config.js           # URL Supabase, chave anon, nome da empresa, senha admin (não commitado)
+├── data.js             # Camada de dados: lê/grava no Supabase ou no modo demo
+├── app.jsx             # App React: todas as telas, componentes e lógica de UI
+├── styles.css          # Design system completo com variáveis de cor e tipografia
+├── schema.sql          # Script SQL para criar as tabelas no Supabase
+├── vercel.json         # Configuração de rotas para o Vercel
+└── SISTEMA.md          # Este arquivo
 ```
 
 ---
 
 ## Configuração inicial (novo ambiente)
 
-1. Criar projeto no [Supabase](https://supabase.com) (ou reutilizar o existente)
+1. Criar projeto no [Supabase](https://supabase.com)
 2. Executar `schema.sql` no SQL Editor do Supabase
-3. Preencher `config.js` com a URL e a chave anon do projeto
+3. Copiar `config.example.js` para `config.js` e preencher com a URL e chave anon do projeto
 4. Fazer `git push` para o repositório GitHub conectado ao Vercel
 5. Acessar a URL gerada pelo Vercel
-
----
-
-*Desenvolvido para Pluma Agroavícola — Planejamento Integrado*

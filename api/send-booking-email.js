@@ -3,15 +3,15 @@
    após agendamento de sala.
 
    Variáveis de ambiente necessárias (Vercel Dashboard):
-     RESEND_API_KEY  — chave da API do Resend (resend.com)
-     EMAIL_FROM      — fallback: "Salas de Reunião <salas@plumaagro.com.br>"
+     RESEND_API_KEY          — chave da API do Resend (resend.com)
+     RESEND_VERIFIED_DOMAINS — domínios verificados no Resend (separados por vírgula)
+     RESEND_DEFAULT_DOMAIN   — domínio padrão de fallback
+     EMAIL_FROM              — endereço de fallback completo (opcional)
    ========================================================== */
 
-const VERIFIED_DOMAINS = new Set([
-  "maisfrango.com.br", "plumaagro.com.br", "bellofoods.com.br",
-  "belloalimentos.com.br", "plusvalagro.com.br", "levoalimentos.com.br",
-]);
-const DEFAULT_DOMAIN = "plumaagro.com.br";
+const _verifiedEnv = process.env.RESEND_VERIFIED_DOMAINS || "";
+const VERIFIED_DOMAINS = new Set(_verifiedEnv.split(",").map(d => d.trim()).filter(Boolean));
+const DEFAULT_DOMAIN = process.env.RESEND_DEFAULT_DOMAIN || "suaempresa.com.br";
 
 /* Se o domínio do organizador está verificado, o e-mail sai do próprio endereço
    dele — aparece corretamente no Outlook/Google Calendar como organizador real.
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
     <!-- Brand -->
     <div style="text-align:center;margin-bottom:24px">
       <div style="display:inline-block;background:#1a6b3a;color:#fff;border-radius:10px;padding:9px 20px;font-weight:700;font-size:13.5px;letter-spacing:.01em">
-        📅 Salas de Reunião · Grupo Pluma
+        📅 Salas de Reunião
       </div>
     </div>
 
@@ -186,7 +186,7 @@ export default async function handler(req, res) {
     <!-- Footer -->
     <div style="text-align:center;margin-top:24px;font-size:11.5px;color:#9ca3af;line-height:1.7">
       Você recebeu este e-mail porque foi incluído como participante desta reunião.<br>
-      Grupo Pluma Agroavícola · Sistema de Gestão de Salas de Reunião
+      Sistema de Gestão de Salas de Reunião
     </div>
   </div>
 </body>
@@ -205,7 +205,7 @@ export default async function handler(req, res) {
   const icsContent = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Salas de Reunião//Grupo Pluma//PT",
+    "PRODID:-//Salas de Reuniao//PT",
     "METHOD:REQUEST",
     "BEGIN:VEVENT",
     `UID:${uid}`,

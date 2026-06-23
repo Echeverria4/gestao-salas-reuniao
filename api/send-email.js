@@ -2,25 +2,19 @@
    Vercel Serverless Function — compositor de e-mail geral
    Variáveis necessárias:
      RESEND_API_KEY   chave Resend
-     EMAIL_FROM       fallback: "Salas de Reunião <salas@plumaagro.com.br>"
+     EMAIL_FROM       fallback: "Salas de Reunião <salas@suaempresa.com.br>"
                       (usado quando o domínio do remetente não está verificado)
 
    Domínios verificados no Resend → e-mail sai do próprio domínio do remetente.
    Domínios não verificados       → cai no EMAIL_FROM de fallback.
    ========================================================== */
 
-/* Grupo Pluma — domínios verificados no Resend.
-   Adicione aqui conforme for verificando cada domínio. */
-const VERIFIED_DOMAINS = new Set([
-  "maisfrango.com.br",
-  "plumaagro.com.br",
-  "bellofoods.com.br",
-  "belloalimentos.com.br",
-  "plusvalagro.com.br",
-  "levoalimentos.com.br",
-]);
+/* Domínios verificados no Resend — configure via variável de ambiente RESEND_VERIFIED_DOMAINS
+   (lista separada por vírgula) ou edite diretamente aqui após verificar no painel do Resend. */
+const _verifiedEnv = process.env.RESEND_VERIFIED_DOMAINS || "";
+const VERIFIED_DOMAINS = new Set(_verifiedEnv.split(",").map(d => d.trim()).filter(Boolean));
 
-const DEFAULT_DOMAIN = "plumaagro.com.br"; // domínio padrão quando o do remetente não está verificado
+const DEFAULT_DOMAIN = process.env.RESEND_DEFAULT_DOMAIN || "suaempresa.com.br";
 
 function buildFrom(senderEmail, senderName) {
   const domain = (senderEmail || "").split("@")[1] || "";
@@ -93,7 +87,7 @@ export default async function handler(req, res) {
 
     <div style="text-align:center;margin-bottom:20px">
       <div style="display:inline-block;background:#1f574b;color:#fff;border-radius:8px;padding:7px 18px;font-size:12px;font-weight:700">
-        📧 Grupo Pluma · Salas de Reunião
+        📧 Salas de Reunião
       </div>
     </div>
 

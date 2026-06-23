@@ -5,11 +5,9 @@ const { useState, useEffect, useMemo, useCallback, useRef } = React;
 const DB = window.DB;
 const CFG = window.APP_CONFIG;
 
-const ALLOWED_DOMAINS = [
-  "maisfrango.com.br", "plumaagro.com.br", "bellofoods.com.br",
-  "belloalimentos.com.br",
-  "plusvalagro.com.br", "levoalimentos.com.br",
-];
+// Defina os domínios de e-mail autorizados no config.js (ALLOWED_DOMAINS)
+// ou deixe vazio para aceitar qualquer domínio.
+const ALLOWED_DOMAINS = (window.APP_CONFIG && window.APP_CONFIG.ALLOWED_DOMAINS) || [];
 const validDomain = (email) => ALLOWED_DOMAINS.includes((email.split("@")[1] || "").toLowerCase());
 
 const toggleSt  = { flex: 1, border: "none", background: "transparent", padding: "8px 12px", borderRadius: "999px", fontSize: 13.5, fontWeight: 600, cursor: "pointer", color: "var(--ink-2)", transition: "all .15s" };
@@ -45,11 +43,11 @@ const fmtICSDate = (iso) => iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 const generateICS = ({ title, start, end, location, description, organizer }) => {
   const lines = [
     "BEGIN:VCALENDAR", "VERSION:2.0",
-    "PRODID:-//Salas de Reunião Pluma//PT", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "PRODID:-//Salas de Reuniao//PT", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `DTSTART:${fmtICSDate(start)}`, `DTEND:${fmtICSDate(end)}`,
     `SUMMARY:${title}`,
-    `UID:${Date.now()}@salas.pluma`,
+    `UID:${Date.now()}@salas-reuniao`,
   ];
   if (location)    lines.push(`LOCATION:${location}`);
   if (description) lines.push(`DESCRIPTION:${description.replace(/\n/g, "\\n")}`);
@@ -178,7 +176,7 @@ function LoginScreen({ onLogin }) {
     e.preventDefault();
     setMsg(null);
     if (!validDomain(email))
-      return setMsg({ type: "err", text: "E-mail não pertence a um domínio autorizado pelo Grupo Pluma / Bello Alimentos." });
+      return setMsg({ type: "err", text: "E-mail não pertence a um domínio autorizado." });
     if (mode === "register" && !name.trim())
       return setMsg({ type: "err", text: "Informe seu nome completo." });
     if (password.length < 6)
@@ -209,7 +207,7 @@ function LoginScreen({ onLogin }) {
       <div style={{ width: "100%", maxWidth: 420, position: "relative" }}>
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div style={{ width: 72, height: 72, borderRadius: 18, overflow: "hidden", margin: "0 auto 14px", boxShadow: "0 8px 28px rgba(0,0,0,.45)", background: "#fff", display: "grid", placeItems: "center" }}>
-            <img src="logo.png" alt="Pluma" style={{ width: "100%", height: "100%", objectFit: "contain", padding: "6px" }} />
+            <img src="logo.png" alt="Logo" style={{ width: "100%", height: "100%", objectFit: "contain", padding: "6px" }} />
           </div>
           <h1 style={{ color: "#fff", fontSize: 21, fontWeight: 700, margin: "0 0 4px", letterSpacing: "-.01em" }}>Salas de Reunião</h1>
           <p style={{ color: "#7f978f", fontSize: 12.5, margin: 0 }}>{CFG.COMPANY_NAME}</p>
@@ -242,7 +240,7 @@ function LoginScreen({ onLogin }) {
           </form>
 
           <p style={{ marginTop: 16, fontSize: 11, color: "var(--muted)", textAlign: "center", lineHeight: 1.7 }}>
-            Acesso restrito a colaboradores dos Grupos<br />Pluma e Bello Alimentos
+            Acesso restrito a colaboradores da empresa
           </p>
         </div>
       </div>
@@ -469,7 +467,7 @@ function StepIndicator({ step, onBack }) {
 }
 
 /* Deriva nome legível a partir do e-mail corporativo.
-   matheus.cavalcante@belloalimentos.com.br → "Matheus Cavalcante" */
+   joao.silva@empresa.com.br → "Joao Silva" */
 function nameFromEmail(email) {
   if (!email) return "";
   const local = email.split("@")[0] || "";
@@ -1295,13 +1293,13 @@ function ProfileModal({ onClose, user, onSaved }) {
       {tab === "info" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <Field label="Nome completo"><input className="input" value={draft.name || ""} onChange={set("name")} placeholder="Seu nome completo" /></Field>
-          <Field label="Cargo / Departamento"><input className="input" value={draft.department || ""} onChange={set("department")} placeholder="Ex: Planejamento Integrado" /></Field>
+          <Field label="Cargo / Departamento"><input className="input" value={draft.department || ""} onChange={set("department")} placeholder="Ex: Departamento" /></Field>
           <div className="row">
-            <Field label="Telefone"><input className="input" value={draft.phone || ""} onChange={set("phone")} placeholder="(67) 9 8126-7198" /></Field>
-            <Field label="E-mail Teams"><input className="input" value={draft.teams || ""} onChange={set("teams")} placeholder="nome@belloalimentos.com.br" /></Field>
+            <Field label="Telefone"><input className="input" value={draft.phone || ""} onChange={set("phone")} placeholder="(00) 9 0000-0000" /></Field>
+            <Field label="E-mail Teams"><input className="input" value={draft.teams || ""} onChange={set("teams")} placeholder="nome@empresa.com.br" /></Field>
           </div>
-          <Field label="Empresa"><input className="input" value={draft.company || ""} onChange={set("company")} placeholder="Ex: Bello Alimentos" /></Field>
-          <Field label="Endereço (opcional)"><input className="input" value={draft.address || ""} onChange={set("address")} placeholder="Rua Minas Gerais, 1932, 14° andar · Cascavel/PR" /></Field>
+          <Field label="Empresa"><input className="input" value={draft.company || ""} onChange={set("company")} placeholder="Nome da Empresa" /></Field>
+          <Field label="Endereço (opcional)"><input className="input" value={draft.address || ""} onChange={set("address")} placeholder="Rua Exemplo, 100, 1° andar · Cidade/UF" /></Field>
         </div>
       )}
 
@@ -1528,13 +1526,13 @@ function SignatureBuilder({ sig, onChange }) {
             </>
           }>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <Field label="Nome completo"><input className="input" value={draft.name || ""} onChange={set("name")} placeholder="Matheus Cavalcante Arantes" /></Field>
-            <Field label="Cargo / Departamento"><input className="input" value={draft.department || ""} onChange={set("department")} placeholder="Planejamento Integrado" /></Field>
+            <Field label="Nome completo"><input className="input" value={draft.name || ""} onChange={set("name")} placeholder="João Silva" /></Field>
+            <Field label="Cargo / Departamento"><input className="input" value={draft.department || ""} onChange={set("department")} placeholder="Departamento" /></Field>
             <div className="row">
-              <Field label="Telefone"><input className="input" value={draft.phone || ""} onChange={set("phone")} placeholder="(67) 9 8126-7198" /></Field>
-              <Field label="E-mail Teams"><input className="input" value={draft.teams || ""} onChange={set("teams")} placeholder="matheus.cavalcante@belloalimentos.com.br" /></Field>
+              <Field label="Telefone"><input className="input" value={draft.phone || ""} onChange={set("phone")} placeholder="(00) 9 0000-0000" /></Field>
+              <Field label="E-mail Teams"><input className="input" value={draft.teams || ""} onChange={set("teams")} placeholder="joao.silva@empresa.com.br" /></Field>
             </div>
-            <Field label="Empresa (ex: Bello Alimentos)"><input className="input" value={draft.company || ""} onChange={set("company")} placeholder="Bello Alimentos" /></Field>
+            <Field label="Empresa"><input className="input" value={draft.company || ""} onChange={set("company")} placeholder="Nome da Empresa" /></Field>
             <Field label="Endereço (opcional)"><input className="input" value={draft.address || ""} onChange={set("address")} placeholder="Rua Minas Gerais, 1932, Edifício Unique, 14° andar · Cascavel/PR" /></Field>
           </div>
 
@@ -1647,7 +1645,7 @@ function ComposeEmail({ user }) {
     <div>
       <div className="page-head">
         <h2>Compor E-mail</h2>
-        <p>Envie e-mails com a identidade visual do Grupo Pluma.</p>
+        <p>Envie e-mails com a identidade visual da empresa.</p>
       </div>
 
       <div className="grid compose-grid">
@@ -1751,10 +1749,10 @@ function ShareView() {
     navigator.clipboard.writeText(APP_URL).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500); });
   };
 
-  const waText  = encodeURIComponent(`Acesse o sistema de salas de reunião do Grupo Pluma:\n${APP_URL}`);
-  const mailSub = encodeURIComponent("Gestão de Salas de Reunião — Grupo Pluma");
-  const mailBody = encodeURIComponent(`Olá,\n\nSegue o link para o sistema de agendamento de salas de reunião do Grupo Pluma:\n\n${APP_URL}\n\nAté mais!`);
-  const teamsMsg = encodeURIComponent(`Acesse o sistema de salas de reunião do Grupo Pluma: ${APP_URL}`);
+  const waText  = encodeURIComponent(`Acesse o sistema de salas de reunião:\n${APP_URL}`);
+  const mailSub = encodeURIComponent("Gestão de Salas de Reunião");
+  const mailBody = encodeURIComponent(`Olá,\n\nSegue o link para o sistema de agendamento de salas de reunião:\n\n${APP_URL}\n\nAté mais!`);
+  const teamsMsg = encodeURIComponent(`Acesse o sistema de salas de reunião: ${APP_URL}`);
   const qrUrl   = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(APP_URL)}&size=220x220&margin=12&color=1f574b&bgcolor=ffffff`;
 
   const shareBtn = (href, label, icon, bg) => (
@@ -2187,7 +2185,7 @@ function App() {
       <div className={`overlay-bg ${sidebarOpen ? "show" : ""}`} onClick={() => setSidebarOpen(false)} />
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="brand">
-          <div className="logo"><img src="logo.png" alt="Pluma" style={{width:"100%",height:"100%",objectFit:"contain",padding:"6px"}} /></div>
+          <div className="logo"><img src="logo.png" alt="Logo" style={{width:"100%",height:"100%",objectFit:"contain",padding:"6px"}} /></div>
           <div><b>Salas de Reunião</b><span>{CFG.COMPANY_NAME}</span></div>
         </div>
         <nav className="nav">
@@ -2198,7 +2196,7 @@ function App() {
             </button>
           ))}
         </nav>
-        <div className="foot">matheus.cavalcante@belloalimentos.com.br</div>
+        <div className="foot">Sistema de Gestão de Salas</div>
       </aside>
 
       <div className="main">
