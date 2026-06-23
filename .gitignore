@@ -1,0 +1,9 @@
+node_modules/
+.vercel/
+.DS_Store
+*.log
+.env
+.env.*
+
+# Credenciais reais — nunca commitar
+config.js

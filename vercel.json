@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/outlook-addin/:path*", "destination": "/outlook-addin/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
